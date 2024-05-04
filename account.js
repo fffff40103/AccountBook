@@ -1,8 +1,9 @@
+// Commandly used html tags
 let section = document.querySelector("section.list");
-
 let add = document.querySelector("form button");
 let table = document.querySelector("section table");
 
+//Setting add button
 add.addEventListener("click", (e) => {
   e.preventDefault();
   //get values of your input
@@ -16,6 +17,43 @@ add.addEventListener("click", (e) => {
 
   let price = form.children[6].value;
 
+  //Determine if the value is empty and specify specific message if is null
+  if (category == "") {
+    alert("Category can't not be blank");
+    return;
+  }
+
+  if (shop == "") {
+    alert("Shop can't not be blank");
+    return;
+  }
+
+  if (consumptionN == "") {
+    alert("Consumption can't not be blank");
+    return;
+  }
+
+  if (year == "") {
+    alert("Year can't not be blank");
+    return;
+  }
+
+  if (month == "") {
+    alert("Month can't not be blank");
+    return;
+  } else if (month > 12 || month < 1) {
+    alert("Plase enter value between 1 -12");
+    return;
+  }
+
+  if (day == "") {
+    alert("Day can't not be blank");
+    return;
+  } else if (day < 1 || day > 31) {
+    alert("Please enter number between 1-31");
+    return;
+  }
+
   // add things into table usig dom to add value
   let tr = document.createElement("tr");
   tr.classList.add("tr1");
@@ -24,6 +62,7 @@ add.addEventListener("click", (e) => {
   let td1 = document.createElement("td");
   td1.classList.add("td1");
   td1.innerText = category;
+
   tr.appendChild(td1);
 
   //td2
@@ -78,7 +117,8 @@ add.addEventListener("click", (e) => {
   form.children[3].value = "";
   form.children[4].value = "";
   form.children[5].value = "";
-  //put input in object and store in localstorge
+  //Put input in object and store in localstorge which will be stored for good unless
+  //you manually deleted it
   let myObject = {
     category: category,
     shop: shop,
@@ -115,8 +155,8 @@ add.addEventListener("click", (e) => {
         mylist.splice(index, 1);
         localStorage.setItem("list", JSON.stringify(mylist));
       }
-      //total cost of list
     });
+    //total cost of list
     let totalPrice = document.querySelector("div.middle h1");
     let List = localStorage.getItem("list");
     let ListArray = JSON.parse(List);
@@ -124,22 +164,21 @@ add.addEventListener("click", (e) => {
     ListArray.forEach((item) => {
       total += Number(item.price);
     });
-    totalPrice.innerText = total;
-
+    totalPrice.innerText = "NTD" + " " + "$" + total;
     todoItem.remove();
   });
   //total cost of list
-  let totalPrice = document.querySelector("div.middle h1");
+  let totalPrice = document.querySelector("div.middle h1.totalCost");
   let total = 0;
   let List = localStorage.getItem("list");
   let ListArray = JSON.parse(List);
   ListArray.forEach((item) => {
     total += Number(item.price);
   });
-  totalPrice.innerText = total;
+  totalPrice.innerText = "NTD" + " " + "$" + total;
 });
 loadData();
-
+//Loading data function is function used to reload data every time soring or reloading page 
 function loadData() {
   let mylist = localStorage.getItem("list");
   if (mylist !== null) {
@@ -184,7 +223,7 @@ function loadData() {
       let trash = document.createElement("button");
       trash.innerHTML = '<i class="fa fa-trash"></i>';
       trash.classList.add("trash");
-      //add button to td
+      //Adding button to td
       td6.appendChild(compelete);
       td6.appendChild(trash);
       tr1.appendChild(td6);
@@ -194,9 +233,10 @@ function loadData() {
         let compeleteLabel = e.target.parentElement.parentElement;
         compeleteLabel.classList.toggle("done");
       });
-
+      
       //trash button event listener
       trash.addEventListener("click", (e) => {
+        console.log(e)
         let todoItem = e.target.parentElement.parentElement;
         let text = todoItem.children[2].innerText;
 
@@ -208,24 +248,36 @@ function loadData() {
           }
         });
         //total cost of list
-        let totalPrice = document.querySelector("div.middle h1");
+        let totalPrice = document.querySelector("div.middle h1.totalCost");
         let total = 0;
         let List = localStorage.getItem("list");
         let ListArray = JSON.parse(List);
         ListArray.forEach((item) => {
           total += Number(item.price);
         });
-        totalPrice.innerText = total;
+        totalPrice.innerText = "NTD" + " " + "$" + total;
 
         todoItem.remove();
       });
 
       table.appendChild(tr1);
       section.appendChild(table);
+
+    //Set the totol costs
+    let totalPrice = document.querySelector("div.middle h1.totalCost");
+    let total = 0;
+    let List = localStorage.getItem("list");
+    let ListArray = JSON.parse(List);
+    ListArray.forEach((item) => {
+      total += Number(item.price);
+    });
+    totalPrice.innerText = "NTD" + " " + "$" + total;
+
     });
   }
 }
 
+//Using merge sort algorithm sorting  
 function mergeTime(arr1, arr2) {
   let result = [];
   let i = 0;
@@ -233,29 +285,30 @@ function mergeTime(arr1, arr2) {
 
   while (i < arr1.length && j < arr2.length) {
     if (Number(arr1[i].year) > Number(arr2[j].year)) {
-      result.push(arr1[i]);
-      i++;
-    } else if (Number(arr1[i].year) < Number(arr2[j].year)) {
       result.push(arr2[j]);
       j++;
+    } else if (Number(arr1[i].year) < Number(arr2[j].year)) {
+      result.push(arr1[i]);
+      i++;
     } else if (Number(arr1[i].year) == Number(arr2[j].year)) {
       if (Number(arr1[i].month) > Number(arr2[j].month)) {
-        result.push(arr1[i]);
-        i++;
-      } else if (Number(arr1[i].month) < Number(arr2[j].month)) {
         result.push(arr2[j]);
         j++;
+      } else if (Number(arr1[i].month) < Number(arr2[j].month)) {
+        result.push(arr1[i]);
+        i++;
       } else if (Number(arr1[i].month) == Number(arr2[j].month)) {
-        if (Number(arr1[i].day) > Number(arr2[j].day)) {
+        if (Number(arr1[i].day) < Number(arr2[j].day)) {
           result.push(arr1[i]);
           i++;
-        } else {
+        } else if (Number(arr1[i].day) > Number(arr2[j].day)) {
           result.push(arr2[j]);
           j++;
         }
       }
     }
   }
+
   while (i < arr1.length) {
     result.push(arr1[i]);
     i++;
@@ -264,10 +317,11 @@ function mergeTime(arr1, arr2) {
     result.push(arr2[j]);
     j++;
   }
-
+  console.log(result);
   return result;
 }
 
+//Merger sort algorithm to compare two different datas
 function mergeSort(arr) {
   if (arr.length === 1) {
     return arr;
@@ -279,8 +333,9 @@ function mergeSort(arr) {
   }
 }
 
+//Sorting button 
 let sortButton = document.querySelector("div.sort button");
-sortButton.addEventListener("click", (e) => {
+sortButton.addEventListener("click", () => {
   let sortArray = mergeSort(JSON.parse(localStorage.getItem("list")));
   localStorage.setItem("list", JSON.stringify(sortArray));
 
@@ -288,6 +343,7 @@ sortButton.addEventListener("click", (e) => {
   for (let i = 0; i < len - 1; i++) {
     table.children[1].remove();
   }
-
+  
+  //Every sorting data has to reload data
   loadData();
 });
